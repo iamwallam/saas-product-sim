@@ -1,10 +1,14 @@
 "use client"
 import { createContext, useState, useContext } from "react"
 
-interface SimulatorParams {
+export interface SimulatorParams {
   churnRate: number
   growthRate: number
   pricePerUser: number
+
+  // NEW parameters
+  marketingSpend: number
+  expansionRate: number
 }
 
 interface SimulatorContextValue {
@@ -19,6 +23,10 @@ export function SimulatorProvider({ children }: { children: React.ReactNode }) {
     churnRate: 0.05,
     growthRate: 0.1,
     pricePerUser: 50,
+
+    // default values for new fields
+    marketingSpend: 500,   // e.g. $500 monthly marketing
+    expansionRate: 0.03,   // e.g. 3% expansion rate
   })
 
   return (

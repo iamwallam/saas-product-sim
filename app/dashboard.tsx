@@ -1,75 +1,55 @@
 import { AppSidebar } from "./components/app-sidebar"
-import {
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb"
+import { BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { AnalyticsCard } from "./components/analytics-card"
-import { Component as AnalyticsChart } from "./components/analytics-chart"
+import { AnalyticsChart } from "./components/analytics-chart"
+import { SimulatorPopover } from "./components/simulator-popover"
+import { SimulatorProvider } from "./simulator/context"
+import { DatePicker } from "./components/date-picker"
 
+// Import your new file:
+import { SimulatedAnalyticsCards } from "./components/simulated-analytics-cards"
 
 export default function Page() {
   return (
-    <SidebarProvider
-      style={{
-        "--sidebar-width": "350px", // Note: Fixed the CSS custom property syntax
-      } as React.CSSProperties}
-    >
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
+    <SimulatorProvider>
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "350px",
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center justify-between">
+            <div className="flex items-center gap-4 px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <BreadcrumbPage>Dashboard</BreadcrumbPage>
+            </div>
+            <div className="flex h-16 items-center px-4 gap-4">
 
-            <BreadcrumbPage>Dashboard</BreadcrumbPage>
+              <DatePicker/>
+              <SimulatorPopover />
+            </div>
+          </header>
 
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-            <div className="rounded-xl bg-muted/50 p-2 shadow-inner">
-              <AnalyticsCard
-                title="Revenue"
-                description="Monthly revenue trends"
-                value="$45,200"
-                trend={20.1}
-              />
-            </div>
-            <div className="rounded-xl bg-muted/50 p-2 shadow-inner">
-              <AnalyticsCard
-                title="Revenue"
-                description="Monthly revenue trends"
-                value="$45,200"
-                trend={20.1}
-              />
-            </div>
-            <div className="rounded-xl bg-muted/50 p-2 shadow-inner">
-              <AnalyticsCard
-                title="Revenue"
-                description="Monthly revenue trends"
-                value="$45,200"
-                trend={20.1}
-              />
-            </div>
-            <div className="rounded-xl bg-muted/50 p-2 shadow-inner">
-              <AnalyticsCard
-                title="Revenue"
-                description="Monthly revenue trends"
-                value="$45,200"
-                trend={20.1}
-              />
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            {/* Instead of repeating the same static card 4 times, 
+                we render your dynamic cards */}
+            <SimulatedAnalyticsCards />
+
+            <div className="flex-1 rounded-xl bg-muted/50 shadow-inner p-4">
+              <AnalyticsChart />
             </div>
           </div>
-          <div className="flex-1 rounded-xl bg-muted/50 shadow-inner p-4">
-            <AnalyticsChart />
-          </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </SimulatorProvider>
   )
 }
