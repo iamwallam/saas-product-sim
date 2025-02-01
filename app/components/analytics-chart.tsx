@@ -1,7 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from "recharts"
 
 import {
   Card,
@@ -16,6 +22,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+
+/**
+ * Sample Data: MRR (dollars) vs. MAU (user count)
+ */
 const chartData = [
   { date: "2024-04-01", mrr: 122000, mau: 48500 },
   { date: "2024-04-02", mrr: 123500, mau: 48800 },
@@ -49,10 +59,11 @@ const chartData = [
   { date: "2024-04-30", mrr: 142200, mau: 54600 },
 ]
 
+/**
+ * Chart config for MRR + MAU lines.
+ * The colors reference your design tokens (chart-1, chart-2).
+ */
 const chartConfig = {
-  views: {
-    label: "Page Views",
-  },  
   mrr: {
     label: "Monthly Recurring Revenue",
     color: "hsl(var(--chart-1))",
@@ -64,6 +75,7 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function Component() {
+  // Example sums (not displayed in this snippet, but you can use them if you like):
   const total = React.useMemo(
     () => ({
       mrr: chartData.reduce((acc, curr) => acc + curr.mrr, 0),
@@ -74,6 +86,7 @@ export function Component() {
 
   return (
     <Card>
+      {/* Header */}
       <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Monthly Recurring Revenue vs. Monthly Active Users</CardTitle>
@@ -82,20 +95,18 @@ export function Component() {
           </CardDescription>
         </div>
       </CardHeader>
+
+      {/* Chart */}
       <CardContent className="px-2 sm:p-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[450px] w-full"
-        >
+        <ChartContainer config={chartConfig} className="aspect-auto h-[400px] w-full">
           <LineChart
             accessibilityLayer
             data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
+            margin={{ left: 12, right: 12 }}
           >
             <CartesianGrid vertical={false} />
+
+            {/* X-Axis (Dates) */}
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -110,29 +121,54 @@ export function Component() {
                 })
               }}
             />
+
+            {/* LEFT Y-Axis (MRR, in dollars) */}
+            <YAxis
+              yAxisId="left"
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(val: number) => `$${(val / 1000).toFixed(1)}k`}
+            />
+
+            {/* RIGHT Y-Axis (MAU, in user count) */}
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(val: number) => `${(val / 1000).toFixed(1)}k users`}
+            />
+
+            {/* Tooltip */}
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  className="w-[150px]"
-                  nameKey="views"
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
+                  // e.g., "Apr 1, 2024"
+                  labelFormatter={(value) =>
+                    new Date(value).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
                     })
-                  }}
+                  }
+                  className="w-[150px]"
                 />
               }
             />
+
+            {/* MRR Line (left axis) */}
             <Line
+              yAxisId="left"
               dataKey="mrr"
               type="monotone"
               stroke={chartConfig.mrr.color}
               strokeWidth={2}
               dot={true}
             />
+
+            {/* MAU Line (right axis) */}
             <Line
+              yAxisId="right"
               dataKey="mau"
               type="monotone"
               stroke={chartConfig.mau.color}

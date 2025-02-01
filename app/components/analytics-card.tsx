@@ -1,37 +1,84 @@
-import type React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowUpRight, ArrowDownRight } from "lucide-react"
+import * as React from "react"
+import { TrendingUp, TrendingDown } from "lucide-react"
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
+/**
+ * Props for the AnalyticsCard component.
+ * - title: main heading at the top
+ * - description: small subheading under the title
+ * - value: the key metric or figure, displayed prominently
+ * - trend: percentage to show how it's trending up or down
+ */
 interface AnalyticsCardProps {
   title: string
-  value: string
-  description: string
-  icon: React.ReactNode
-  trend: number
+  description?: string
+  value: string | number
+  trend?: number
 }
 
-export default function AnalyticsCard({ title, value, description, icon, trend }: AnalyticsCardProps) {
-  const isTrendPositive = trend >= 0
+export function AnalyticsCard({
+  title,
+  description,
+  value,
+  trend,
+}: AnalyticsCardProps) {
+  // Determine if the trend is up or down
+  const isTrendUp = trend !== undefined && trend > 0
+  const isTrendDown = trend !== undefined && trend < 0
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {icon}
+    <Card className="w-full h-full">
+      <CardHeader>
+        {/* Title slightly smaller */}
+        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+        {/* Description even smaller */}
+        {description && (
+          <CardDescription className="text-sm">{description}</CardDescription>
+        )}
       </CardHeader>
+
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        <p className="text-xs text-muted-foreground">{description}</p>
-        <div className="mt-2 flex items-center text-xs">
-          {isTrendPositive ? (
-            <ArrowUpRight className="mr-1 h-4 w-4 text-green-500" />
-          ) : (
-            <ArrowDownRight className="mr-1 h-4 w-4 text-red-500" />
-          )}
-          <span className={isTrendPositive ? "text-green-500" : "text-red-500"}>{Math.abs(trend)}%</span>
-          <span className="ml-1 text-muted-foreground">from last month</span>
-        </div>
+        {/* The main metric/value displayed prominently */}
+        <div className="text-4xl font-bold">{value}</div>
       </CardContent>
+
+      {/* Trend Indicator (if trend is provided) */}
+      {trend !== undefined && (
+        <CardFooter className="flex-col items-start gap-2 text-sm">
+          {isTrendUp && (
+            <div className="flex items-center gap-2 font-medium leading-none text-green-600">
+              <span>
+                Trending up by {Math.abs(trend).toFixed(1)}% this month
+              </span>
+              <TrendingUp className="h-4 w-4" />
+            </div>
+          )}
+
+          {isTrendDown && (
+            <div className="flex items-center gap-2 font-medium leading-none text-red-600">
+              <span>
+                Trending down by {Math.abs(trend).toFixed(1)}% this month
+              </span>
+              <TrendingDown className="h-4 w-4" />
+            </div>
+          )}
+
+          {/* If trend = 0 or otherwise not up/down */}
+          {!isTrendUp && !isTrendDown && (
+            <div className="font-medium leading-none text-muted-foreground">
+              No significant change
+            </div>
+          )}
+        </CardFooter>
+      )}
     </Card>
   )
 }
