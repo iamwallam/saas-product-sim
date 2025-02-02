@@ -13,6 +13,7 @@ import { DatePicker } from "./components/date-picker"
 
 // Import your new file:
 import { SimulatedAnalyticsCards } from "./components/simulated-analytics-cards"
+import { DataTableDemo } from "./components/data-table"
 
 export default function Page() {
   return (
@@ -26,26 +27,30 @@ export default function Page() {
       >
         <AppSidebar />
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center justify-between">
+          <header className="flex h-16 shrink-0 items-center justify-between border-b">
             <div className="flex items-center gap-4 px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
-              <BreadcrumbPage>Dashboard</BreadcrumbPage>
+              <BreadcrumbPage className="text-lg font-semibold">Dashboard</BreadcrumbPage>
             </div>
             <div className="flex h-16 items-center px-4 gap-4">
-
               <DatePicker/>
               <SimulatorPopover />
             </div>
           </header>
 
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            {/* Instead of repeating the same static card 4 times, 
-                we render your dynamic cards */}
+          <div className="flex flex-1 flex-col gap-4 p-4">
+            {/* Analytics cards section */}
             <SimulatedAnalyticsCards />
 
-            <div className="flex-1 rounded-xl bg-muted/50 shadow-inner p-4">
+            {/* Full width chart section */}
+            <div >
               <AnalyticsChart />
+            </div>
+
+            {/* Data table section */}
+            <div>
+              <DataTableDemo />
             </div>
           </div>
         </SidebarInset>

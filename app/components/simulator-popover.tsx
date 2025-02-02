@@ -10,6 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useSimulator } from "@/app/simulator/context"
+import { PlusIcon } from "lucide-react"
 
 export function SimulatorPopover() {
   // Pull state from context
@@ -45,10 +46,10 @@ export function SimulatorPopover() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">Scenario</Button>
+        <Button variant="outline"><PlusIcon/>Simulator</Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-80">
+      <PopoverContent className="w-120">
         <div className="grid gap-4">
           <div className="space-y-1">
             <h4 className="font-medium leading-none">Configure</h4>

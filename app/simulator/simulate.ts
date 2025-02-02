@@ -15,7 +15,7 @@ export function simulateSaaSMetrics(params: SimulatorParams) {
   const data = []
 
   // Starting point
-  let users = 1000
+  let users = 10
 
   for (let month = 1; month <= 12; month++) {
     // 1) churn: lose some portion of users

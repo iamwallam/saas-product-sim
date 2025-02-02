@@ -6,13 +6,13 @@ import { simulateSaaSMetrics } from "@/app/simulator/simulate"
 import { AnalyticsCard } from "@/app/components/analytics-card"
 
 export function SimulatedAnalyticsCards() {
-  // Pull the scenario parameters (churnRate, growthRate, pricePerUser)
+  // 1. Pull the scenario parameters (churnRate, growthRate, etc.) from context
   const { params } = useSimulator()
 
-  // Generate 12-month data whenever params changes
+  // 2. Generate 12-month data whenever params changes
   const data = React.useMemo(() => simulateSaaSMetrics(params), [params])
 
-  // If no data or no months, just return null
+  // 3. If no data or no months, just return null
   if (!data || data.length === 0) {
     return null
   }
@@ -21,56 +21,54 @@ export function SimulatedAnalyticsCards() {
   const firstMonth = data[0]
   const lastMonth = data[data.length - 1]
 
-  // 1) Cumulative revenue: sum of mrr across all months
+  // (A) Cumulative revenue: sum of MRR across all months
   const totalRevenue = data.reduce((acc, cur) => acc + cur.mrr, 0)
 
-  // 2) Final month MRR: lastMonth.mrr
-  // Let's compute a trend from first to last month
+  // (B) Final month MRR
   const revenueTrend = ((lastMonth.mrr - firstMonth.mrr) / firstMonth.mrr) * 100
 
-  // 3) Final month user count: lastMonth.users
-  // We'll do a user trend similarly
-  const userTrend = ((lastMonth.users - firstMonth.users) / firstMonth.users) * 100
+  // (C) Final month user count
+  // NOTE: multiplying by 10 or 100 is your choice, depending on how you want to represent the percentage
+  const userTrend = ((lastMonth.users - firstMonth.users) / firstMonth.users) * 10
 
-  // 4) Average user count: sum of all users / number of months
-  const averageUsers =
-    data.reduce((acc, cur) => acc + cur.users, 0) / data.length
-  // If you want a trend for average vs. first month, you could compute it,
-  // but let's skip that or call it 0 for now.
-  const avgUsersTrend = 0 // or do something else
+  // (D) Average user count across the 12 months
+  const averageUsers = data.reduce((acc, cur) => acc + cur.users, 0) / data.length
+  const avgUsersTrend = 0 // or some other calculation if you wish
 
   return (
-    <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+    <div className="grid auto-rows-min gap-2 p-2 md:grid-cols-4">
       {/* Card 1: Cumulative Revenue */}
-      <div className="rounded-xl bg-muted/50 p-2 shadow-inner">
-        <AnalyticsCard
-          title="Cumulative Revenue"
-          description="Sum across 12 months"
-          value={`$${Math.floor(totalRevenue).toLocaleString()}`}
-          // This might not have a direct "trend," but you could pass revenueTrend or 0
-          trend={undefined}
-        />
-      </div>
+      <AnalyticsCard
+        title="Cumulative Revenue"
+        description="Sum across 12 months"
+        value={`$${Math.floor(totalRevenue).toLocaleString()}`}
+        // No specific trend—it's a total
+        trend={undefined}
+      />
 
       {/* Card 2: Final Month MRR */}
-      <div className="rounded-xl bg-muted/50 p-2 shadow-inner">
-        <AnalyticsCard
-          title="Monthly Revenue"
-          description="Final month MRR"
-          value={`$${lastMonth.mrr.toLocaleString()}`}
-          trend={revenueTrend}
-        />
-      </div>
+      <AnalyticsCard
+        title="Monthly Revenue"
+        description="Final month MRR"
+        value={`$${lastMonth.mrr.toLocaleString()}`}
+        trend={revenueTrend}
+      />
 
       {/* Card 3: Final Month Users */}
-      <div className="rounded-xl bg-muted/50 p-2 shadow-inner">
-        <AnalyticsCard
-          title="Active Users"
-          description="Final month user count"
-          value={`${lastMonth.users.toLocaleString()}`}
-          trend={userTrend}
-        />
-      </div>
+      <AnalyticsCard
+        title="Active Users"
+        description="Final month user count"
+        value={lastMonth.users.toLocaleString()}
+        trend={userTrend}
+      />
+
+      {/* Card 4: Average Users */}
+      <AnalyticsCard
+        title="Average Users"
+        description="Mean user count"
+        value={Math.round(averageUsers).toLocaleString()}
+        trend={avgUsersTrend}
+      />
     </div>
   )
 }

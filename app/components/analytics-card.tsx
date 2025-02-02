@@ -4,11 +4,9 @@ import { TrendingUp, TrendingDown } from "lucide-react"
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
+
+import { Separator } from "@/components/ui/separator"
 
 /**
  * Props for the AnalyticsCard component.
@@ -30,55 +28,51 @@ export function AnalyticsCard({
   value,
   trend,
 }: AnalyticsCardProps) {
-  // Determine if the trend is up or down
   const isTrendUp = trend !== undefined && trend > 0
   const isTrendDown = trend !== undefined && trend < 0
 
   return (
-    <Card className="w-full h-full">
-      <CardHeader>
-        {/* Title slightly smaller */}
-        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
-        {/* Description even smaller */}
-        {description && (
-          <CardDescription className="text-sm">{description}</CardDescription>
-        )}
-      </CardHeader>
+    <Card>
+      <CardContent className="flex items-center gap-4 p-4">
+        {/* Left side - Title and description */}
+        <div className="flex flex-col  items-start">
+          <div className="text-md font-semibold">{title}</div>
+         
+        </div>
 
-      <CardContent>
-        {/* The main metric/value displayed prominently */}
-        <div className="text-4xl font-bold">{value}</div>
+        {/* Spacer */}
+        <div className="flex-1" />
+      
+
+        {/* Right side - Value and trend */}
+        <div className="flex flex-col items-end">
+          <div className="text-xl font-bold">{value}</div>
+          
+          {trend !== undefined && (
+            <>
+              {isTrendUp && (
+                <div className="flex items-center text-sm font-medium text-green-600">
+                  <span>{Math.abs(trend).toFixed(1)}%</span>
+                  <TrendingUp className="h-4 w-4" />
+                </div>
+              )}
+
+              {isTrendDown && (
+                <div className="flex items-center gap-1 text-sm font-medium text-red-600">
+                  <span>{Math.abs(trend).toFixed(1)}%</span>
+                  <TrendingDown className="h-4 w-4" />
+                </div>
+              )}
+
+              {!isTrendUp && !isTrendDown && (
+                <div className="text-sm font-medium text-muted-foreground">
+                  No change
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </CardContent>
-
-      {/* Trend Indicator (if trend is provided) */}
-      {trend !== undefined && (
-        <CardFooter className="flex-col items-start gap-2 text-sm">
-          {isTrendUp && (
-            <div className="flex items-center gap-2 font-medium leading-none text-green-600">
-              <span>
-                Trending up by {Math.abs(trend).toFixed(1)}% this month
-              </span>
-              <TrendingUp className="h-4 w-4" />
-            </div>
-          )}
-
-          {isTrendDown && (
-            <div className="flex items-center gap-2 font-medium leading-none text-red-600">
-              <span>
-                Trending down by {Math.abs(trend).toFixed(1)}% this month
-              </span>
-              <TrendingDown className="h-4 w-4" />
-            </div>
-          )}
-
-          {/* If trend = 0 or otherwise not up/down */}
-          {!isTrendUp && !isTrendDown && (
-            <div className="font-medium leading-none text-muted-foreground">
-              No significant change
-            </div>
-          )}
-        </CardFooter>
-      )}
     </Card>
   )
 }

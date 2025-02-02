@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { Crimson_Pro } from 'next/font/google'
+import { Inter } from 'next/font/google'
 
-const crimsonPro = Crimson_Pro({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],  // You can adjust these weights based on your needs
+  weight: ['400', '500', '600', '700'],  // Choose the weights you need
   display: 'swap',
 })
 
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={crimsonPro.className}>
+    <html lang="en" className={inter.className}>
       <body>{children}</body>
     </html>
   )

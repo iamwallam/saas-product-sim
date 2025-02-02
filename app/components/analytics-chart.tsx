@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { ResponsiveContainer, CartesianGrid, Line, LineChart, XAxis, YAxis, LabelList } from "recharts"
 
 import {
   Card,
@@ -11,10 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
@@ -23,71 +20,75 @@ import { useSimulator } from "@/app/simulator/context"
 import { simulateSaaSMetrics } from "@/app/simulator/simulate"
 
 /**
- * Chart config for stacked bars:
- * - base => color 1
- * - expansions => color 2
+ * We only have one line—MRR—so we can skip the ChartLegend or config for multiple data keys.
  */
-const chartConfig = {
-  base: {
-    label: "Base MRR",
-    color: "hsl(var(--chart-1))",
-  },
-  expansions: {
-    label: "Expansion MRR",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig
-
 export function AnalyticsChart() {
-  // Pull params from context
+  // Grab parameters from your simulator context
   const { params } = useSimulator()
   // Recompute data whenever params changes
   const data = React.useMemo(() => simulateSaaSMetrics(params), [params])
 
+  // Add chart configuration
+  const chartConfig = {
+    mrr: {
+      label: "Monthly Recurring Revenue",
+      color: "hsl(var(--chart-1))"
+    }
+  }
+
   return (
     <Card>
-      <CardHeader className="flex flex-col space-y-0 border-b p-4">
-        <CardTitle>Monthly MRR (Stacked)</CardTitle>
+      <CardHeader className="p-4">
+        <CardTitle className="text-lg font-semibold">Monthly Revenue</CardTitle>
         <CardDescription>
-          Shows Base vs. Expansion revenue across 12 months
+          Showing monthly revenue across 12 months
         </CardDescription>
       </CardHeader>
+      <CardContent className="h-[450px]">
+        <ChartContainer className="w-full h-[400px]" config={chartConfig}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ left: 12, right: 12, top: 8, bottom: 8 }}>
+              <CartesianGrid vertical={false} />
 
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[450px] w-full">
-          <BarChart data={data} margin={{ left: 12, right: 12, top: 4, bottom: 4 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-            />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(val: number) => `$${val.toLocaleString()}`}
+              />
 
-            {/* Single Y-axis for MRR in dollars */}
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(val: number) => `$${val.toLocaleString()}`}
-            />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    indicator="line"
+                  />
+                }
+              />
 
-            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-            <ChartLegend content={<ChartLegendContent />} />
-
-            {/* Stacked bars: base + expansions */}
-            <Bar
-              dataKey="base"
-              stackId="mrr"
-              fill="var(--color-base)"
-              radius={[0, 0, 4, 4]}
-            />
-            <Bar
-              dataKey="expansions"
-              stackId="mrr"
-              fill="var(--color-expansions)"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
+              <Line
+                dataKey="mrr"
+                type="monotone"
+                stroke="hsl(var(--chart-1))"
+                strokeWidth={2}
+                dot={{ fill: "hsl(var(--chart-1))" }}
+                activeDot={{ r: 6 }}
+              >
+                {/* Label each point */}
+                <LabelList
+                  position="top"
+                  offset={12}
+                  className="fill-foreground"
+                  fontSize={12}
+                />
+              </Line>
+            </LineChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>
