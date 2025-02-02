@@ -1,4 +1,3 @@
-
 # SaaS Product Simulator
 
 A minimal React/TypeScript dashboard for modeling key SaaS business metrics (churn, growth, pricing, marketing spend, and expansions). This simulator provides a simple way to visualize month-by-month revenue and user counts, along with interactive charts and analytics cards.
@@ -24,7 +23,7 @@ Adjust essential SaaS inputs in a popover form:
 - Uses Next.js 14, Tailwind CSS, and Recharts for an accessible, modern dashboard experience
 - Fits various screen sizes, with potential for easy theming or brand expansion
 
-![Dashboard Screenshot](dashboard-screenshot.png)
+![Dashboard Screenshot](/public/dashboard-screenshot.png)
 
 ## Installation & Setup
 
