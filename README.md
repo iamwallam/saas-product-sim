@@ -26,7 +26,7 @@ Adjust essential SaaS inputs in a popover form:
 - Uses Next.js 14, Tailwind CSS, and Recharts for an accessible, modern dashboard experience
 - Fits various screen sizes, with potential for easy theming or brand expansion
 
-![Dashboard Screenshot](Dashboard%20Screenshot.png)
+![Dashboard Screenshot](dashboard-screenshot.png)
 
 ## Installation & Setup
 
