@@ -1,6 +1,4 @@
-I'll help format this content properly for a README.md file. Here's the formatted version:
 
-```markdown:README.md
 # SaaS Product Simulator
 
 A minimal React/TypeScript dashboard for modeling key SaaS business metrics (churn, growth, pricing, marketing spend, and expansions). This simulator provides a simple way to visualize month-by-month revenue and user counts, along with interactive charts and analytics cards.
@@ -58,8 +56,7 @@ npm run start
 ```
 - Creates a production build and starts the server
 
-[Add Screenshot Here]
-*(Optional screenshot of the simulator popover with sliders or numeric inputs.)*
+
 
 ## How It Works
 
@@ -75,8 +72,7 @@ npm run start
 ### 4. Line Chart
 - Renders the mrr data in a Recharts `<LineChart>`, giving a visual timeline of revenue progression
 
-[Add Screenshot Here]
-*(Optional screenshot focusing on the final month revenue card and trend arrow.)*
+
 
 ## Project Structure
 ```
