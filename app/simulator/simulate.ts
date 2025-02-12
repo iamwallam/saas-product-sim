@@ -1,53 +1,51 @@
 import type { SimulatorParams } from "./context"
 
 /**
- * Produce 12 months of data with separate 'base' vs. 'expansions'.
+ * Simulates a single month of SaaS metrics based on team role allocations.
  * 
- * - churnRate: fraction of users lost each month
- * - growthRate: fraction of users gained from organic growth
- * - pricePerUser: how much each user pays
- * - marketingSpend: partial driver for new signups
- * - expansionRate: fraction of 'base' revenue added each month from expansions
+ * - New Business: Each rep brings in 5 new customers
+ * - Support: Each rep reduces churn by 0.5% (from 10% baseline)
+ * - Account Managers: Each adds 3% to expansion revenue
  */
-export function simulateSaaSMetrics(params: SimulatorParams) {
-  const { churnRate, growthRate, pricePerUser, marketingSpend, expansionRate } = params
+export function simulateMonth(
+  currentUsers: number,
+  params: SimulatorParams,
+  randomFactor: number
+): {
+  newUsers: number
+  newMRR: number
+  churnRate: number
+} {
+  // Baseline churn set to 10%
+  const baseChurn = 0.10
+  // Each support rep reduces churn by 0.5% (0.005)
+  const churnReduction = 0.005 * params.support
+  const effectiveChurn = Math.max(baseChurn - churnReduction, 0)
+  // Factor in randomFactor to add some variability
+  const churnThisMonth = effectiveChurn * (1 + randomFactor)
 
-  const data = []
+  // Subtract churned users from current
+  const remainingUsers = Math.floor(currentUsers * (1 - churnThisMonth))
 
-  // Starting point
-  let users = 10
+  // New business: each rep brings in 5 new customers
+  const newCustomers = params.newBiz * 5 * (1 + randomFactor)
 
-  for (let month = 1; month <= 12; month++) {
-    // 1) churn: lose some portion of users
-    users = Math.floor(users * (1 - churnRate))
+  // Marketing signups: $50 per signup
+  const marketingSignups = Math.floor(params.marketingSpend / 50)
 
-    // 2) new signups from growth
-    const growthSignups = Math.floor(users * growthRate)
+  // Compute total new users
+  const newUsers = remainingUsers + Math.floor(newCustomers) + marketingSignups
 
-    // 3) new signups from marketing
-    const marketingSignups = Math.floor(marketingSpend / 50) // Example formula
-    const totalSignups = growthSignups + marketingSignups
+  // Account managers: each rep adds +3% to expansion revenue
+  const baseRevenue = newUsers * params.pricePerUser
+  const expansionRate = params.accountManagers * 0.03
+  const expansions = baseRevenue * expansionRate * (1 + randomFactor)
 
-    // Update user base after signups
-    users += totalSignups
+  const totalMRR = Math.floor(baseRevenue + expansions)
 
-    // 4) base revenue for this month
-    const base = users * pricePerUser
-
-    // 5) expansions: fraction of 'base' from upsells
-    const expansions = base * expansionRate
-
-    // 6) total MRR is base + expansions
-    const mrr = base + expansions
-
-    data.push({
-      month: `Month ${month}`,
-      users,
-      base: Math.floor(base),
-      expansions: Math.floor(expansions),
-      mrr: Math.floor(mrr),
-    })
+  return {
+    newUsers,
+    newMRR: totalMRR,
+    churnRate: Math.round(churnThisMonth * 100), // store as percentage (e.g., 7 => 7%)
   }
-
-  return data
 }

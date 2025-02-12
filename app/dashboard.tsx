@@ -7,13 +7,24 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { AnalyticsChart } from "./components/analytics-chart"
-import { SimulatorPopover } from "./components/simulator-popover"
-import { SimulatorProvider } from "./simulator/context"
+import { SimulatorDialog } from "./components/simulator-dialog"
+import { SimulatorProvider, useSimulator } from "./simulator/context"
 import { DatePicker } from "./components/date-picker"
-
-// Import your new file:
+import { Button } from "@/components/ui/button"
+import { PlayIcon } from "lucide-react"
 import { SimulatedAnalyticsCards } from "./components/simulated-analytics-cards"
 import { DataTableDemo } from "./components/data-table"
+
+function SimulationControls() {
+  const { simulateNextMonth, currentMonth } = useSimulator()
+  
+  return (
+    <Button onClick={simulateNextMonth} variant="outline">
+      <PlayIcon className="h-4 w-4" />
+      Month {currentMonth}
+    </Button>
+  )
+}
 
 export default function Page() {
   return (
@@ -35,7 +46,8 @@ export default function Page() {
             </div>
             <div className="flex h-16 items-center px-4 gap-4">
               <DatePicker/>
-              <SimulatorPopover />
+              <SimulatorDialog/>
+              <SimulationControls/>
             </div>
           </header>
 

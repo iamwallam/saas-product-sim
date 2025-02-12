@@ -17,16 +17,12 @@ import {
 } from "@/components/ui/chart"
 
 import { useSimulator } from "@/app/simulator/context"
-import { simulateSaaSMetrics } from "@/app/simulator/simulate"
 
 /**
  * We only have one line—MRR—so we can skip the ChartLegend or config for multiple data keys.
  */
 export function AnalyticsChart() {
-  // Grab parameters from your simulator context
-  const { params } = useSimulator()
-  // Recompute data whenever params changes
-  const data = React.useMemo(() => simulateSaaSMetrics(params), [params])
+  const { history } = useSimulator()
 
   // Add chart configuration
   const chartConfig = {
@@ -36,18 +32,32 @@ export function AnalyticsChart() {
     }
   }
 
+  // If no history, show empty state
+  if (history.length === 0) {
+    return (
+      <Card>
+        <CardHeader className="p-4">
+          <CardTitle className="text-lg font-semibold">Monthly Revenue</CardTitle>
+          <CardDescription>
+            Click "Next Month" to start the simulation
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
+
   return (
     <Card>
       <CardHeader className="p-4">
         <CardTitle className="text-lg font-semibold">Monthly Revenue</CardTitle>
         <CardDescription>
-          Showing monthly revenue across 12 months
+          Showing monthly revenue progression
         </CardDescription>
       </CardHeader>
       <CardContent className="h-[450px]">
         <ChartContainer className="w-full h-[400px]" config={chartConfig}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} margin={{ left: 12, right: 12, top: 8, bottom: 8 }}>
+            <LineChart data={history} margin={{ left: 12, right: 12, top: 8, bottom: 8 }}>
               <CartesianGrid vertical={false} />
 
               <XAxis

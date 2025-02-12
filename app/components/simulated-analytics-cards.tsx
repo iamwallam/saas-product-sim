@@ -2,72 +2,87 @@
 
 import * as React from "react"
 import { useSimulator } from "@/app/simulator/context"
-import { simulateSaaSMetrics } from "@/app/simulator/simulate"
 import { AnalyticsCard } from "@/app/components/analytics-card"
 
 export function SimulatedAnalyticsCards() {
-  // 1. Pull the scenario parameters (churnRate, growthRate, etc.) from context
-  const { params } = useSimulator()
+  const { history } = useSimulator()
 
-  // 2. Generate 12-month data whenever params changes
-  const data = React.useMemo(() => simulateSaaSMetrics(params), [params])
-
-  // 3. If no data or no months, just return null
-  if (!data || data.length === 0) {
+  // If no history, show empty state or return null
+  if (history.length === 0) {
     return null
   }
 
-  // For demonstration, let's get the first and last months
-  const firstMonth = data[0]
-  const lastMonth = data[data.length - 1]
+  // Indices for last/prev month
+  const lastIndex = history.length - 1
+  const prevIndex = lastIndex - 1
+  const lastMonth = history[lastIndex]
+  const prevMonth = prevIndex >= 0 ? history[prevIndex] : null
 
-  // (A) Cumulative revenue: sum of MRR across all months
-  const totalRevenue = data.reduce((acc, cur) => acc + cur.mrr, 0)
+  // 1) Cumulative Revenue
+  const totalRevenue = history.reduce((acc, cur) => acc + cur.mrr, 0)
+  let cumulativeTrend: number | undefined = undefined
+  if (prevMonth) {
+    const prevCumulative = history.slice(0, prevIndex + 1).reduce((acc, cur) => acc + cur.mrr, 0)
+    if (prevCumulative !== 0) {
+      const diff = totalRevenue - prevCumulative
+      cumulativeTrend = Number((diff / prevCumulative * 100).toFixed(1))
+    }
+  }
 
-  // (B) Final month MRR
-  const revenueTrend = ((lastMonth.mrr - firstMonth.mrr) / firstMonth.mrr) * 100
+  // 2) Monthly Revenue Trend
+  let revenueTrend: number | undefined = undefined
+  if (prevMonth?.mrr && prevMonth.mrr !== 0) {
+    const diff = lastMonth.mrr - prevMonth.mrr
+    revenueTrend = Number((diff / prevMonth.mrr * 100).toFixed(1))
+  }
 
-  // (C) Final month user count
-  // NOTE: multiplying by 10 or 100 is your choice, depending on how you want to represent the percentage
-  const userTrend = ((lastMonth.users - firstMonth.users) / firstMonth.users) * 10
+  // 3) Users Trend
+  let userTrend: number | undefined = undefined
+  if (prevMonth?.users && prevMonth.users !== 0) {
+    const diff = lastMonth.users - prevMonth.users
+    userTrend = Number((diff / prevMonth.users * 100).toFixed(1))
+  }
 
-  // (D) Average user count across the 12 months
-  const averageUsers = data.reduce((acc, cur) => acc + cur.users, 0) / data.length
-  const avgUsersTrend = 0 // or some other calculation if you wish
+  // 4) Churn Rate Trend
+  let churnTrend: number | undefined = undefined
+  if (prevMonth?.churn && typeof lastMonth.churn === "number" && prevMonth.churn !== 0) {
+    const diff = lastMonth.churn - prevMonth.churn
+    churnTrend = Number((diff / prevMonth.churn * 100).toFixed(1))
+  }
 
   return (
     <div className="grid auto-rows-min gap-2 p-2 md:grid-cols-4">
-      {/* Card 1: Cumulative Revenue */}
+      {/* 1) Cumulative Revenue */}
       <AnalyticsCard
         title="Cumulative Revenue"
-        description="Sum across 12 months"
+        description="Total to date"
         value={`$${Math.floor(totalRevenue).toLocaleString()}`}
-        // No specific trend—it's a total
-        trend={undefined}
+        trend={cumulativeTrend}
       />
 
-      {/* Card 2: Final Month MRR */}
+      {/* 2) Monthly Revenue (MRR) */}
       <AnalyticsCard
         title="Monthly Revenue"
-        description="Final month MRR"
+        description="Current MRR"
         value={`$${lastMonth.mrr.toLocaleString()}`}
         trend={revenueTrend}
       />
 
-      {/* Card 3: Final Month Users */}
+      {/* 3) Active Users */}
       <AnalyticsCard
         title="Active Users"
-        description="Final month user count"
+        description="Current user count"
         value={lastMonth.users.toLocaleString()}
         trend={userTrend}
       />
 
-      {/* Card 4: Average Users */}
+      {/* 4) Churn Rate */}
       <AnalyticsCard
-        title="Average Users"
-        description="Mean user count"
-        value={Math.round(averageUsers).toLocaleString()}
-        trend={avgUsersTrend}
+        title="Churn Rate"
+        description="Monthly churn (%)"
+        value={`${lastMonth.churn?.toFixed(2) ?? "N/A"}%`}
+        trend={churnTrend}
+        invertTrend={true}
       />
     </div>
   )
