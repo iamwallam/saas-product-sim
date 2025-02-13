@@ -30,7 +30,11 @@ interface SimulatorContextValue {
   currentMonth: number
   userCount: number
   history: MonthData[]
-  simulateNextMonth: () => void // New method
+  simulateNextMonth: () => void
+  showIntro: boolean
+  setShowIntro: React.Dispatch<React.SetStateAction<boolean>>
+  resetSimulation: () => void
+  isGameOver: boolean
 }
 
 const SimulatorContext = createContext<SimulatorContextValue | undefined>(undefined)
@@ -54,11 +58,16 @@ export function SimulatorProvider({ children }: { children: React.ReactNode }) {
   const [currentMonth, setCurrentMonth] = useState<number>(1)
   const [userCount, setUserCount] = useState<number>(10)
   const [history, setHistory] = useState<MonthData[]>([])
+  const [showIntro, setShowIntro] = useState<boolean>(true)
 
-  // New simulation method
+  // Compute game over state based on current month
+  const isGameOver = currentMonth > 24
+
+  // Update simulateNextMonth to prevent simulation after game over
   const simulateNextMonth = () => {
-    const randomFactor = (Math.random() - 0.5) / 10 // ±5%
-    
+    if (isGameOver) return
+
+    const randomFactor = (Math.random() - 0.5) / 10
     const { newUsers, newMRR, churnRate } = simulateMonth(userCount, params, randomFactor)
     
     setUserCount(newUsers)
@@ -71,6 +80,13 @@ export function SimulatorProvider({ children }: { children: React.ReactNode }) {
     setCurrentMonth(prev => prev + 1)
   }
 
+  const resetSimulation = () => {
+    setCurrentMonth(1)
+    setUserCount(10)
+    setHistory([])
+    setShowIntro(true)
+  }
+
   return (
     <SimulatorContext.Provider value={{
       params,
@@ -78,7 +94,11 @@ export function SimulatorProvider({ children }: { children: React.ReactNode }) {
       currentMonth,
       userCount,
       history,
-      simulateNextMonth
+      simulateNextMonth,
+      showIntro,
+      setShowIntro,
+      resetSimulation,
+      isGameOver
     }}>
       {children}
     </SimulatorContext.Provider>

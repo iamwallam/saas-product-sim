@@ -55,7 +55,11 @@ export function AnalyticsChart() {
         </CardDescription>
       </CardHeader>
       <CardContent className="h-[450px]">
-        <ChartContainer className="w-full h-[400px]" config={chartConfig}>
+        <ChartContainer 
+          className="w-full h-[400px]" 
+          config={chartConfig}
+          aria-label="Line chart showing monthly revenue progression"
+        >
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={history} margin={{ left: 12, right: 12, top: 8, bottom: 8 }}>
               <CartesianGrid vertical={false} />
