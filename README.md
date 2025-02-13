@@ -130,8 +130,6 @@ layout.tsx                              // Next.js root layout
 - License: MIT (Update as needed)
 - Built With: Next.js, TypeScript, Tailwind CSS, Recharts, and an accessible UI library
 
-	Note: This project is a work in progress—about 70-80% feature-complete. It demonstrates turn-based SaaS simulation logic, front-end fundamentals, and partial accessibility measures, but further polish is recommended before a public portfolio launch.
-
 ## Thank You!
 
 Enjoy exploring (or extending) this SaaS Role-Allocation Simulator. Feel free to open an issue or submit a pull request if you have improvements or suggestions.
